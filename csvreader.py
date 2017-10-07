@@ -4,6 +4,7 @@ import collections
 trainfile1 = "train_set_x.csv"
 trainfile2 = "train_set_y.csv"
 
+
 with open(trainfile1,'rb') as f1,open(trainfile2,'rb') as f2:
     xreader = list(csv.reader(f1))
     yreader = list(csv.reader(f2))
