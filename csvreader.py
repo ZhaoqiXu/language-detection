@@ -1,8 +1,8 @@
 import csv
 import collections
 
-trainfile1 = "train_set_x.csv"
-trainfile2 = "train_set_y.csv"
+trainfile1 = "dat_train_x.csv"
+trainfile2 = "dat_train_y.csv"
 
 
 with open(trainfile1,'rb') as f1,open(trainfile2,'rb') as f2:
