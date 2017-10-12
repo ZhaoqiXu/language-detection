@@ -4,7 +4,10 @@ import collections
 trainfile1 = "dat_train_x.csv"
 trainfile2 = "dat_train_y.csv"
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 4bef187... add new train set
 =======
 >>>>>>> parent of 4bef187... add new train set
 
