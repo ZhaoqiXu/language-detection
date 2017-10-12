@@ -3,7 +3,10 @@ import collections
 
 trainfile1 = "dat_train_x.csv"
 trainfile2 = "dat_train_y.csv"
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 4bef187... add new train set
 
 with open(trainfile1,'rb') as f1,open(trainfile2,'rb') as f2:
     xreader = list(csv.reader(f1))
