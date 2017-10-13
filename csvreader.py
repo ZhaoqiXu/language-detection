@@ -22,14 +22,18 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt')
     CounterList = []
     for i in range(0,5):
          CounterList.append(collections.Counter())
+    Occur = [0.0]*5
     for index,x in enumerate(xreader[1:]):
         #first value of csv column is "Category" so it should be skipped.
         x = x[1]
         counter = collections.Counter(x)
         y = yreader[index+1][1]
         y = int(y)
+        Occur[y] = Occur[y] + 1
         CounterList[y] = CounterList[y] + counter
     DictList = []
+    totaloccur = sum(Occur)
+    Freq = [i/totaloccur for i in Occur]
     for counter in CounterList:
         totalchar = float(sum(counter.values()))
         counter[' '] = 0
@@ -49,7 +53,7 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt')
     #print Matrix # 5*158
     for index,input in enumerate(testreader[1:]):
         input = "".join(input[1].split())
-        Py = np.array([1.0] * 5)
+        Py = np.array(Freq)
         for char in input:
             charutfval = ord(char)
             try:
