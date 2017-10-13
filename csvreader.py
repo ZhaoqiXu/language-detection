@@ -1,5 +1,6 @@
 import csv
 import collections
+<<<<<<< HEAD
 import pandas as pd
 import numpy as np
 trainfile1 = "train_set_x.csv"
@@ -7,6 +8,18 @@ trainfile2 = "train_set_y.csv"
 testfile = "test_set_x.csv"
 outputfile = "test_set_y_temp.csv"
 
+=======
+
+trainfile1 = "dat_train_x.csv"
+trainfile2 = "dat_train_y.csv"
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> parent of 4bef187... add new train set
+=======
+>>>>>>> parent of 4bef187... add new train set
+>>>>>>> 0ccd3d1a284ea40e6a3e6a85667f75b0fe75ef0c
 
 
 with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt') as f3,open(outputfile,'wt') as f4:
