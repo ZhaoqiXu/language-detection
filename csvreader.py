@@ -7,8 +7,8 @@ trainfile2 = "train_set_y.csv"
 testfile = "test_set_x.csv"
 outputfile = "test_set_y_temp.csv"
 
-trainfile1 = "dat_train_x.csv"
-trainfile2 = "dat_train_y.csv"
+# trainfile1 = "dat_train_x.csv"
+# trainfile2 = "dat_train_y.csv"
 
 
 
@@ -40,7 +40,7 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt')
         #CounterList2.append([(i, float(counter[i]) / float(totalchar)) for i in counter])
         dict = {}
         for i in counter:
-            dict[ord(i)] = float(counter[i])/totalchar
+            dict[ord(i)] = (float(counter[i])+1)/(totalchar+2)
         DictList.append(dict)
     #print(DictList)
     # for counter in DictList:
