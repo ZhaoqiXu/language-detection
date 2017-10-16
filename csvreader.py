@@ -2,6 +2,7 @@ import csv
 import collections
 import pandas as pd
 import numpy as np
+import re
 trainfile1 = "train_set_x.csv"
 trainfile2 = "train_set_y.csv"
 testfile = "test_set_x.csv"
@@ -10,7 +11,9 @@ outputfile = "test_set_y_temp.csv"
 # trainfile1 = "dat_train_x.csv"
 # trainfile2 = "dat_train_y.csv"
 
-
+emoji_pattern = re.compile(r'([\U00002600-\U000027BF\U0001F300-\U0001F64F\U0001F680-\U0001F6FF])')
+def remove_emoji(text):
+    return emoji_pattern.sub('', text)
 
 with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt') as f3,open(outputfile,'wt') as f4:
     xreader = list(csv.reader(f1))
@@ -26,6 +29,7 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt')
     for index,x in enumerate(xreader[1:]):
         #first value of csv column is "Category" so it should be skipped.
         x = x[1]
+        x = remove_emoji(x)
         counter = collections.Counter(x)
         y = yreader[index+1][1]
         y = int(y)
