@@ -3,8 +3,8 @@ import collections
 import pandas as pd
 import numpy as np
 import re
-trainfile1 = "train_set_x.csv"
-trainfile2 = "train_set_y.csv"
+trainfile1 = "train_set_x_cleaned.csv"
+trainfile2 = "train_set_y_cleaned.csv"
 testfile = "test_set_x.csv"
 outputfile = "test_set_y_temp.csv"
 modifiedx = "train_set_x_cleaned.csv"
@@ -88,7 +88,8 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt')
                 #if all the P(xi) are zero this char will be skipped.
                 print(word_count_in_class)
                 continue
-            Py = np.multiply(Py,np.divide(np.multiply(word_count_in_class,ITF)+1,Denominator))
+            #Py = np.multiply(Py,np.divide(np.multiply(word_count_in_class,ITF)+1,Denominator))
+            Py = np.multiply(Py,np.divide(word_count_in_class+1,Denominator))
             #Py = np.multiply(Py,Pxi)
         if len(Py) != 5:
             print(Py)
