@@ -45,7 +45,9 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(modifiedx,'wt'
     #     print str(index) + char
 
     truenum = 0
-    for index,x in enumerate(xreader[2000:5000]):
+    charnum = 0
+    start = 0
+    for index,x in enumerate(xreader[1:]):
         #first value of csv column is "Category" so it should be skipped.
         x = x[1]
         if len(x) == 0:
@@ -54,21 +56,21 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(modifiedx,'wt'
         x = remove_emoji(x)
         y = yreader[index+1][1]
         y = int(y)
-
+        charnum = charnum + len(x)
         #print dict.get(y)
-        # try:
-        #     result = translator.detect(x).lang
-        # except json.decoder.JSONDecodeError as e:
-        #     print(index)
-        #     print(x)
-        #     continue
+        try:
+            #result = translator.detect(x).lang
+            result = detect(x)
+        except Exception as e:
+            print(e)
+            print(index)
+            print(x)
+            continue
+        #result = translator.detect(x).lang
+        if dict.get(y) == result:
+            xwriter.writerow({'Id': str(start), 'Text': x})
+            ywriter.writerow({'Id': str(start), 'Category': str(y)})
+            start = start + 1
 
-        result = translator.detect(x).lang
-        if dict.get(y) == result or result == "":
-            truenum = truenum + 1
-        #time.sleep(0.15)
-        # if int(index/300) > int((index - 1)/300):
-        #     time.sleep(40)
-        #print (result)
     print(truenum)
     print("--- %s seconds ---" % (time.time() - start_time))

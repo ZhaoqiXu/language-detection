@@ -3,10 +3,12 @@ import collections
 import pandas as pd
 import numpy as np
 import re
-trainfile1 = "train_set_x.csv"
-trainfile2 = "train_set_y.csv"
+trainfile1 = "train_set_x_cleaned.csv"
+trainfile2 = "train_set_y_cleaned.csv"
 testfile = "test_set_x.csv"
 outputfile = "test_set_y_temp.csv"
+modifiedx = "train_set_x_cleaned.csv"
+modifiedy = "train_set_y_cleaned.csv"
 
 # trainfile1 = "dat_train_x.csv"
 # trainfile2 = "dat_train_y.csv"
@@ -41,6 +43,16 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt')
     for counter in CounterList:
         totalchar = float(sum(counter.values()))
         counter[' '] = 0
+        # counter['0'] = 0
+        # counter['1'] = 0
+        # counter['2'] = 0
+        # counter['3'] = 0
+        # counter['4'] = 0
+        # counter['5'] = 0
+        # counter['6'] = 0
+        # counter['7'] = 0
+        # counter['8'] = 0
+        # counter['9'] = 0
         #CounterList2.append([(i, float(counter[i]) / float(totalchar)) for i in counter])
         dict = {}
         for i in counter:
@@ -56,10 +68,12 @@ with open(trainfile1,'rt') as f1,open(trainfile2,'rt') as f2,open(testfile,'rt')
     Matrix = np.array(Matrix.values)
     #print Matrix # 5*158
     for index,input in enumerate(testreader[1:]):
-        input = "".join(input[1].split())
+        input = "".join(remove_emoji(input[1]).split())
         Py = np.array(Freq)
         for char in input:
             charutfval = ord(char)
+            # if(charutfval >=48 and charutfval <= 57):
+            #     continue
             try:
                 columnindex = utflist.index(charutfval)
             except ValueError:
