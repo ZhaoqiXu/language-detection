@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# Standard imports
 import csv
-
+# Scipy imports
 from scipy.spatial.distance import euclidean
-
 
 class DataPoint:
 
@@ -33,35 +33,59 @@ class DataPoint:
 
 class languageAnalyzer():
 
-    def __init__(self, dataset=None):
-        self.numerals =   ['1','2','3','4','5','6','7','8','9','0']
-        self.alphabet26 = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', '’']
-        self.alphabetES = [u'á',u'é',u'í',u'ó',u'ú',u'ñ',u'ü',u'¿',u'¡']
-        self.alphabetFR = [u'à',u'â',u'æ',u'ç',u'é',u'è',u'ê',u'ë',u'î',u'ï',u'ô',u'œ',u'ù',u'û',u'ü',u'ÿ']
-        self.alphabetSK = [u'á',u'ä',u'č',u'ď',u'é',u'í',u'ĺ',u'ľ',u'ň',u'ó',u'ô',u'ŕ',u'š',u'ť',u'ú',u'ý',u'ž']
-        self.alphabetDE = [u'ä',u'ö',u'ü',u'ß']
-        self.alphabetPL = [u'ą',u'ć',u'ę',u'ł',u'ń',u'ó',u'ś',u'ź',u'ż']
+    def __init__(self):
+        self.alphabet26 = {u'1',u'2',u'3',u'4',u'5',u'6',u'7',u'8',u'9',u'0',
+                           u'a',u'b',u'c',u'd',u'e',u'f',u'g',
+                           u'h',u'i',u'j',u'k',u'l',u'm',u'n',
+                           u'o',u'p',u'q',u'r',u's',u't',
+                           u'u',u'v',u'w',u'x',u'y',u'z',
+                           u'+',u'­',u'*',u'/',u'’',u'…',u'º',u',',u'±',}
+        self.alphabetSK = {u'á',u'ä',u'č',u'ď',u'é',u'í',u'ĺ',u'ľ',u'ň',u'ó',u'ô',u'ŕ',u'š',u'ť',u'ú',u'ý',u'ž'}
+        self.alphabetFR = {u'à',u'â',u'æ',u'ç',u'é',u'è',u'ê',u'ë',u'î',u'ï',u'ô',u'œ',u'ù',u'û',u'ü',u'ÿ'}
+        self.alphabetES = {u'á',u'ã',u'é',u'í',u'ó',u'ú',u'ñ',u'ü',u'¿',u'¡'}
+        self.alphabetDE = {u'ä',u'ö',u'ü',u'ß'}
+        self.alphabetPL = {u'ą',u'ć',u'ę',u'ł',u'ń',u'ó',u'ś',u'ź',u'ż'}
 
         self.languages = {
-            '0': {'name':'Slovak', 'special':self.alphabetSK},
-            '1': {'name':'French', 'special':self.alphabetFR},
-            '2': {'name':'Spanish', 'special':self.alphabetES},
-            '3': {'name':'German', 'special':self.alphabetDE},
-            '4': {'name':'Polish', 'special':self.alphabetPL},
+            '0': {
+                'name': 'Slovak',
+                'alphabet': self.alphabet26 | self.alphabetSK,
+                'alphaTable': {},
+                'alphaCount': 1,
+            },
+            '1': {
+                'name': 'French',
+                'alphabet': self.alphabet26 | self.alphabetFR,
+                'alphaTable': {},
+                'alphaCount': 1,
+            },
+            '2': {
+                'name': 'Spanish',
+                'alphabet': self.alphabet26 | self.alphabetES,
+                'alphaTable': {},
+                'alphaCount': 1,
+            },
+            '3': {
+                'name': 'German',
+                'alphabet': self.alphabet26 | self.alphabetDE,
+                'alphaTable': {},
+                'alphaCount': 1,
+            },
+            '4': {
+                'name': 'Polish',
+                'alphabet': self.alphabet26 | self.alphabetPL,
+                'alphaTable': {},
+                'alphaCount': 1,
+            },
         }
 
-        self.dataset = dataset
-        self.frequency = {
-            '0': {'total':0, 'table':{}},
-            '1': {'total':0, 'table':{}},
-            '2': {'total':0, 'table':{}},
-            '3': {'total':0, 'table':{}},
-            '4': {'total':0, 'table':{}},
-        }
-
+        self.alphaSet = set()
+        for language in self.languages:
+            self.alphaSet.update(self.languages[language]['alphabet'])
 
     def loadTrainingData(self, filenameX, filenameY, preprocessed=False):
         trainingSet = []
+
         with open(filenameX, 'rb') as csvFileX, open(filenameY, 'rb') as csvFileY:
             csvReaderX = csv.reader(csvFileX, delimiter=',')
             fieldnameX = csvReaderX.next()
@@ -70,114 +94,113 @@ class languageAnalyzer():
 
             dictReaderX = csv.DictReader(csvFileX, fieldnames=fieldnameX)
             dictReaderY = csv.DictReader(csvFileY, fieldnames=fieldnameY)
+
             for (x, y) in zip(dictReaderX, dictReaderY):
                 Id = x['Id']
                 Text = x['Text']
                 Category = y['Category']
                 if preprocessed:
-                    if len(Text) < 5:
+                    if len(Text) < 1:
                         continue
+                
                 entry = DataPoint(Id, Text, Category)
                 trainingSet.append(entry)
+        
         return trainingSet
-
 
     def loadTestData(self, filename):
         testSet = []
+        
         with open(filename, 'rb') as csvFile:
             csvReader = csv.reader(csvFile, delimiter=',')
             fieldNames = csvReader.next()
             dictReader = csv.DictReader(csvFile, fieldnames=fieldNames)
+            
             for row in dictReader:
                 entry = DataPoint(row['Id'], row['Text'])
                 testSet.append(entry)
+        
         return testSet
 
+    def defineFeatures(self, dataset):
+        featureSpace = {}
+        featureCount = 0
+        
+        for data in dataset:
+            unicodeText = data.Text.replace(" ", "").lower()
+            for alpha in unicodeText:
+                if alpha in featureSpace:
+                    featureSpace[alpha] += 1
+                else:
+                    featureSpace[alpha] = 1
+                featureCount += 1
 
-    def calcFrequency(self, dataset, languageId):
+        return featureSpace, featureCount
 
-        specials = self.languages[languageId]['special']
-
-        # E.g. French alphabets = 26 regulars + specials
-        alphabets = list(self.alphabet26)
-        alphabets.extend(specials)
-        alphaTable = {
-            char: 1 for char in alphabets
-        }
-
+    # Calculate occurrences of each item in featureSpace (char)
+    def calcFrequency(self, trainingSet, languageId):
+        alphabet = self.languages[languageId]['alphabet']
         alphaCount = 0
-        for sentence in dataset:
-            if sentence.Category == languageId:
-                try:
-                    unicodeText = sentence.Text.replace(" ", "").decode('utf-8').lower()
-                except:
-                    print('Unicode encoding failed.')
-                    break
+        alphaTable = { char: 1 for char in alphabet }
+
+        for trainingData in trainingSet:
+            if trainingData.Category == languageId:
+                unicodeText = trainingData.Text.replace(" ", "").decode('utf-8').lower()
                 for alpha in unicodeText:
                     if alpha in alphaTable:
                         alphaTable[alpha] += 1
-                        alphaCount += 1
-                        if alpha in specials:
+                        if alpha not in self.alphabet26:
                             alphaTable[alpha] += 1
+                        alphaCount += 1
 
-        self.frequency[languageId].update({
-            'total': alphaCount,
-            'table': alphaTable,
+        self.languages[languageId].update({
+            'alphaTable': alphaTable,
+            'alphaCount': alphaCount,
         })
 
-
-    def analyzeFreq(self):
-        alphabets = []
-        alphabets.extend(self.alphabet26)
-        alphabets.extend(self.alphabetES)
-        alphabets.extend(self.alphabetFR)
-        alphabets.extend(self.alphabetSK)
-        alphabets.extend(self.alphabetDE)
-        alphabets.extend(self.alphabetPL)
-        alphaTable = {
-            char: 1 for char in alphabets
+    # Normalize weights based on language distribution
+    def normalizeFreq(self):
+        featureTable = {
+            char: 1 for char in self.alphaSet
         }
 
-        for fid in self.frequency:
-            freqTable = self.frequency[fid]['table']
-            for alpha in freqTable:
-                alphaTable[alpha] += freqTable[alpha]
+        for language in self.languages:
+            alphaTable = self.languages[language]['alphaTable']
+            for alpha in alphaTable:
+                featureTable[alpha] += alphaTable[alpha]
 
-        for fid in self.frequency:
-            freqTable = self.frequency[fid]['table']
-            for alpha in freqTable:
-                try:
-                    charCount = freqTable[alpha]
-                    f = float(charCount)/alphaTable[alpha]
-                except ZeroDivisionError:
-                    f = 0.0
-                self.frequency[fid]['table'].update({
-                    alpha: f,
+        for language in self.languages:
+            alphaTable = self.languages[language]['alphaTable']
+            for alpha in alphaTable:
+                weight = float(alphaTable.get(alpha, 1))/featureTable[alpha]
+                self.languages[language]['alphaTable'].update({
+                    alpha: weight,
                 })
-
 
     # Calculate confidence for text is in languageId
     def calcConfidence(self, languageId, unicodeText):
-        confidence = 0.0
-        freqRecord = self.frequency[languageId]
-
-        penalty = 0.0
-        for language in self.languages:
-            penalty += self.frequency[language]['total']
-        penalty = freqRecord['total']/penalty
-
-        for char in unicodeText:
-            if char in freqRecord['table']:
-                confidence += float(freqRecord['table'][char])/ freqRecord['total']
-            else:
-                confidence -= penalty
-
         if len(unicodeText) > 0:
-            return confidence / len(unicodeText)
+            confidence = 0.0
+            alphaCount = self.languages[languageId].get('alphaCount', 1)
+            alphaTable = self.languages[languageId].get('alphaTable', {})
+
+            # Idea: more probable = higher penalty if witnessing a foreign char
+            featureCount = 0.0
+            for language in self.languages:
+                featureCount += self.languages[language]['alphaCount']
+            penalty = float(alphaCount)/featureCount
+
+            for alpha in unicodeText:
+                if alpha in alphaTable:
+                    confidence += float(alphaTable[alpha])/alphaCount
+                else:
+                    confidence -= penalty
+
+            return confidence/len(unicodeText)
         else:
-            return 0
+            return 0.5
 
-
+    # Plot based on features (Slovak-ness, French-ness, etc.)
     def plotData(self, dataPoint):
         unicodeText = dataPoint.Text.replace(" ", "").decode('utf-8').lower()
         for language in self.languages:
@@ -186,9 +209,8 @@ class languageAnalyzer():
                 language: confidence
             })
 
-
+    # Calculate Euclidean distance of two data points
     def calcEuclideanDistance(self, trainingData, testData):
-
         trainingFeatures = []
         testFeatures = []
 
@@ -200,11 +222,8 @@ class languageAnalyzer():
         return distance
 
 
-
-
 def main():
     analyzer = languageAnalyzer()
-    print('Printing numerals...%s' % ', '.join(analyzer.numerals))
     print('Printing alphabet26...%s' % ', '.join(analyzer.alphabet26))
     print('Printing alphabetSK...%s' % ', '.join(analyzer.alphabetSK))
     print('Printing alphabetFR...%s' % ', '.join(analyzer.alphabetFR))
